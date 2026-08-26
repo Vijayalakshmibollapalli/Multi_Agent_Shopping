@@ -11,33 +11,49 @@ def search(query,n=6):
     try:return tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False).get("results",[])
     except Exception as e:return [{"title":"SEARCH_ERROR","url":"","content":str(e)}]
 
-def format_results(results,limit=4500):
-    output=[];total=0
+def format_results(results,limit=5000):
+    output=[]
+    total=0
     for i,item in enumerate(results,1):
-        text=f"[SOURCE {i}]\nTITLE: {item.get('title','')}\nURL: {item.get('url','')}\nCONTENT: {item.get('content','')[:1200]}\n\n"
+        text=f"[SOURCE {i}]\nTitle: {item.get('title','')}\nURL: {item.get('url','')}\nContent: {item.get('content','')[:1500]}\n"
         if total+len(text)>limit:break
-        output.append(text);total+=len(text)
-    return "".join(output)
+        output.append(text)
+        total+=len(text)
+    return "\n".join(output)
 
 @mcp.tool
-def search_products(query:str):return format_results(search(f"{query} product models features available products",6),4500)
+def search_products(query:str):
+    """Find real product models and relevant product information."""
+    return format_results(search(f"{query} product models specifications features official website",6),5000)
 
 @mcp.tool
-def search_official_specs(query:str):return format_results(search(f"{query} official manufacturer specifications product page",6),4500)
+def search_official_specs(query:str):
+    """Find official manufacturer specifications."""
+    return format_results(search(f"{query} official manufacturer specifications product features",6),4500)
 
 @mcp.tool
-def search_prices(query:str):return format_results(search(f"{query} current price India retailer Amazon Flipkart Croma Reliance Digital",6),4500)
+def search_prices(query:str):
+    """Find current prices and availability."""
+    return format_results(search(f"{query} current price India Amazon Flipkart Croma Reliance Digital official store",6),4500)
 
 @mcp.tool
-def search_reviews(query:str):return format_results(search(f"{query} expert reviews user reviews pros cons problems Reddit",6),4500)
+def search_reviews(query:str):
+    """Find expert reviews, user feedback, pros, cons and problems."""
+    return format_results(search(f"{query} expert review user review Reddit pros cons problems",6),4500)
 
 @mcp.tool
-def search_comparison(query:str):return format_results(search(f"{query} comparison alternatives versus pros cons",6),4000)
+def search_comparison(query:str):
+    """Find comparisons and alternatives."""
+    return format_results(search(f"{query} comparison vs alternatives advantages disadvantages",6),4000)
 
 @mcp.tool
-def search_web(query:str):return format_results(search(f"{query} latest information product research",6),3500)
+def search_web(query:str):
+    """Search broader web information."""
+    return format_results(search(f"{query} latest information reviews comparison",6),4000)
 
 @mcp.tool
-def search_youtube(query:str):return format_results(search(f"site:youtube.com {query} review comparison demonstration unboxing",6),3000)
+def search_youtube(query:str):
+    """Find YouTube reviews, comparisons, demonstrations and unboxing videos."""
+    return format_results(search(f"site:youtube.com {query} review comparison unboxing",6),3500)
 
 if __name__=="__main__":mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
