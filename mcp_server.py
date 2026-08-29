@@ -30,18 +30,18 @@ def search_official_specs(product:str)->str:
 
 @mcp.tool
 def search_prices(product:str)->str:
-    """Find current product price in India."""
-    return json.dumps(search_web(f'"{product}" price India buy',3),ensure_ascii=False)
+    """Find current product prices in India."""
+    return json.dumps(search_web(f'"{product}" price India',3),ensure_ascii=False)
 
 @mcp.tool
 def search_reviews(product:str)->str:
-    """Find product reviews pros cons."""
+    """Find reviews, pros and cons."""
     return json.dumps(search_web(f'"{product}" review pros cons',3),ensure_ascii=False)
 
 @mcp.tool
 def search_comparison(products:str)->str:
-    """Compare products."""
-    return json.dumps(search_web(f'{products} comparison',3),ensure_ascii=False)
+    """Compare multiple products."""
+    return json.dumps(search_web(f"{products} comparison specifications pros cons",3),ensure_ascii=False)
 
 if __name__=="__main__":
     mcp.run(transport="streamable-http",host="0.0.0.0",port=int(os.getenv("PORT",8000)))
