@@ -14,67 +14,61 @@ def search(query,n=5):
     try: return tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False).get("results",[])
     except Exception as e: return [{"title":"SEARCH_ERROR","url":"","content":str(e)}]
 
-def format_results(results,limit=2200):
+def domain(url):
+    match=re.search(r"https?://(?:www\.)?([^/]+)",str(url or "").lower())
+    return match.group(1) if match else ""
+
+def format_results(results,limit=2500):
     output=[];total=0
     for i,item in enumerate(results,1):
         title=clean(item.get("title",""))
         url=clean(item.get("url","")).replace("\\n","").replace("\n","")
-        content=clean(item.get("content",""))[:550]
+        content=clean(item.get("content",""))[:650]
         if not title or not url or not url.startswith("http"): continue
-        text=f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}\n\n"
+        text=f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nDomain: {domain(url)}\nContent: {content}\n\n"
         if total+len(text)>limit: break
         output.append(text);total+=len(text)
     return "".join(output)
 
-def remove_domains(results,domains):
-    return [x for x in results if not any(domain in str(x.get("url","")).lower() for domain in domains)]
+def official_results(results):
+    blocked=["amazon.","flipkart.","croma.","reliancedigital.","gadgets360.","91mobiles.","smartprix.","nanoreview.","facebook.","reddit.","youtube.","hindustantimes."]
+    return [item for item in results if not any(x in domain(item.get("url","")) for x in blocked)]
 
 @mcp.tool
 def search_products(query:str):
-    """Find multiple real product models relevant to any shopping request."""
-    results=search(f"{query} best products India current models price specifications",8)
-    return format_results(results,3500)
-
-@mcp.tool
-def search_candidate(query:str):
-    """Research one exact product candidate including model, specifications and price."""
-    results=search(f'"{query}" India price specifications buy',6)
-    return format_results(results,2500)
+    """Find multiple real product candidates for any shopping request."""
+    return format_results(search(f"{query} India best products models buy options",8),3200)
 
 @mcp.tool
 def search_official_specs(query:str):
-    """Find official manufacturer specifications for an exact product model."""
-    results=search(f'"{query}" official specifications manufacturer',6)
-    return format_results(results,2200)
+    """Find manufacturer or brand specification pages for an exact product."""
+    results=official_results(search(f"{query} official specifications manufacturer product specs",8))
+    return format_results(results,3000)
 
 @mcp.tool
 def search_prices(query:str):
     """Find current product prices from India retailers and price sources."""
-    results=search(f'"{query}" current price India buy',6)
-    return format_results(results,2200)
+    return format_results(search(f"{query} current price India buy price",8),3000)
 
 @mcp.tool
 def search_reviews(query:str):
-    """Find professional reviews, advantages, disadvantages and user feedback."""
-    results=search(f'"{query}" review pros cons India',5)
-    return format_results(results,1800)
+    """Find independent reviews, pros, cons and user experience."""
+    return format_results(search(f"{query} review pros cons performance problems",6),2400)
 
 @mcp.tool
 def search_comparison(query:str):
-    """Find comparable alternatives for an exact product."""
-    results=search(f'"{query}" alternatives comparison best similar products',5)
-    return format_results(results,1600)
+    """Find comparable alternatives and product comparisons."""
+    return format_results(search(f"{query} alternatives competitors comparison",6),2200)
 
 @mcp.tool
 def search_web(query:str):
-    """Find additional reliable information relevant to a shopping decision."""
-    results=search(query,5)
-    return format_results(results,1600)
+    """Find additional reliable information relevant to purchase decisions."""
+    return format_results(search(f"{query} buying guide features value for money",5),1800)
 
 @mcp.tool
 def search_youtube(query:str):
-    """Find video reviews for an exact product."""
-    results=search(f'site:youtube.com "{query}" review',4)
-    return format_results(results,1000)
+    """Find video review links for a product."""
+    return format_results(search(f"site:youtube.com {query} review",5),1400)
 
-if __name__=="__main__": mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
+if __name__=="__main__":
+    mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
