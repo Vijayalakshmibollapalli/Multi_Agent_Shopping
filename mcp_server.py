@@ -18,26 +18,16 @@ def valid_url(url):
 def search(query,n=5):
     try:
         results=tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False).get("results",[])
-        output=[]
-        for item in results:
-            title=clean(item.get("title",""))
-            url=clean(item.get("url",""))
-            content=clean(item.get("content",""))
-            if title and valid_url(url): output.append({"title":title,"url":url,"content":content})
-        return output
-    except Exception:
-        return []
+        return [{"title":clean(x.get("title","")),"url":clean(x.get("url","")),"content":clean(x.get("content",""))} for x in results if clean(x.get("title","")) and valid_url(x.get("url",""))]
+    except Exception: return []
 
 def clean_results(results,limit=6):
-    output=[]
-    for item in results[:limit]:
-        output.append({"title":item["title"][:200],"url":item["url"],"content":item["content"][:1200]})
-    return output
+    return [{"title":x["title"][:200],"url":x["url"],"content":x["content"][:1200]} for x in results[:limit]]
 
 @mcp.tool
 def search_products(query:str):
     """Find real purchasable product models matching the user's request."""
-    return clean_results(search(f"{query} exact product models India",8),8)
+    return clean_results(search(f"{query} best exact laptop models India buy",8),8)
 
 @mcp.tool
 def search_product_details(product:str):
@@ -47,13 +37,12 @@ def search_product_details(product:str):
 @mcp.tool
 def search_official_specs(product:str):
     """Find official manufacturer specifications for an exact product."""
-    results=search(f'"{product}" official specifications manufacturer',6)
-    return clean_results(results,6)
+    return clean_results(search(f'"{product}" official specifications manufacturer',6),6)
 
 @mcp.tool
 def search_prices(product:str):
     """Find current Indian prices for an exact product."""
-    return clean_results(search(f'"{product}" price India buy',6),6)
+    return clean_results(search(f'"{product}" price India ₹ buy Amazon Flipkart Croma',6),6)
 
 @mcp.tool
 def search_reviews(product:str):
@@ -64,11 +53,6 @@ def search_reviews(product:str):
 def search_comparison(product:str):
     """Find alternatives or comparisons for an exact product."""
     return clean_results(search(f'"{product}" alternatives comparison',5),5)
-
-@mcp.tool
-def search_web(product:str):
-    """Find additional reliable information for an exact product."""
-    return clean_results(search(f'"{product}" specifications features India',5),5)
 
 if __name__=="__main__":
     mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
