@@ -1,4 +1,5 @@
-import os,re
+import os
+import re
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from tavily import TavilyClient
@@ -10,54 +11,64 @@ tavily=TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 def clean(x): return re.sub(r"\s+"," ",str(x or "")).strip()
 
-def search(query,n=5):
-    try: return tavily.search(query=query,max_results=n,search_depth="basic",include_answer=False).get("results",[])
-    except Exception: return []
-
 def valid_url(url):
     url=clean(url).replace("\\n","").replace("\n","")
     return url.startswith("http://") or url.startswith("https://")
 
-def format_results(results,limit=1800,content_limit=300):
-    output=[];total=0
-    for item in results:
-        title=clean(item.get("title",""))
-        url=clean(item.get("url",""))
-        content=clean(item.get("content",""))[:content_limit]
-        if not title or not valid_url(url): continue
-        text=f"Title: {title}\nURL: {url}\nContent: {content}\n\n"
-        if total+len(text)>limit: break
-        output.append(text);total+=len(text)
-    return "".join(output)
+def search(query,n=5):
+    try:
+        results=tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False).get("results",[])
+        output=[]
+        for item in results:
+            title=clean(item.get("title",""))
+            url=clean(item.get("url",""))
+            content=clean(item.get("content",""))
+            if title and valid_url(url): output.append({"title":title,"url":url,"content":content})
+        return output
+    except Exception:
+        return []
+
+def clean_results(results,limit=6):
+    output=[]
+    for item in results[:limit]:
+        output.append({"title":item["title"][:200],"url":item["url"],"content":item["content"][:1200]})
+    return output
 
 @mcp.tool
 def search_products(query:str):
-    """Find exact purchasable product models for the user's shopping request."""
-    return format_results(search(f"{query} exact model specifications price India",8),2200,280)
+    """Find real purchasable product models matching the user's request."""
+    return clean_results(search(f"{query} exact product models India",8),8)
 
 @mcp.tool
-def search_product_details(query:str):
-    """Find exact specifications for one specific product model."""
-    return format_results(search(f'"{query}" exact specifications RAM processor storage India',6),1800,300)
+def search_product_details(product:str):
+    """Find specifications for one exact product model."""
+    return clean_results(search(f'"{product}" specifications processor RAM storage display',6),6)
 
 @mcp.tool
-def search_official_specs(query:str):
-    """Find official manufacturer specifications for one exact product model."""
-    return format_results(search(f'"{query}" official specifications manufacturer',6),1800,300)
+def search_official_specs(product:str):
+    """Find official manufacturer specifications for an exact product."""
+    results=search(f'"{product}" official specifications manufacturer',6)
+    return clean_results(results,6)
 
 @mcp.tool
-def search_prices(query:str):
-    """Find current India price for one exact product model."""
-    return format_results(search(f'"{query}" price India buy ₹',6),1600,260)
+def search_prices(product:str):
+    """Find current Indian prices for an exact product."""
+    return clean_results(search(f'"{product}" price India buy',6),6)
 
 @mcp.tool
-def search_reviews(query:str):
-    """Find reviews for one exact product model."""
-    return format_results(search(f'"{query}" review pros cons',5),1400,260)
+def search_reviews(product:str):
+    """Find reviews and user feedback for an exact product."""
+    return clean_results(search(f'"{product}" review pros cons',5),5)
 
 @mcp.tool
-def search_alternatives(query:str):
-    """Find competing exact product models."""
-    return format_results(search(f"{query} best alternatives similar price India",5),1400,240)
+def search_comparison(product:str):
+    """Find alternatives or comparisons for an exact product."""
+    return clean_results(search(f'"{product}" alternatives comparison',5),5)
 
-if __name__=="__main__": mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
+@mcp.tool
+def search_web(product:str):
+    """Find additional reliable information for an exact product."""
+    return clean_results(search(f'"{product}" specifications features India',5),5)
+
+if __name__=="__main__":
+    mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
