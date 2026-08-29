@@ -8,7 +8,7 @@ load_dotenv()
 mcp=FastMCP("AI Shopping Intelligence MCP Server")
 tavily=TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
-def clean(x): return re.sub(r"\s+"," ",str(x or "")).strip()
+def clean(text): return re.sub(r"\s+"," ",str(text or "")).strip()
 
 def search(query,n=5):
     try: return tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False).get("results",[])
@@ -19,7 +19,7 @@ def format_results(results,limit=2200):
     for i,item in enumerate(results,1):
         title=clean(item.get("title",""))
         url=clean(item.get("url","")).replace("\\n","").replace("\n","")
-        content=clean(item.get("content",""))[:650]
+        content=clean(item.get("content",""))[:550]
         if not title or not url or not url.startswith("http"): continue
         text=f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}\n\n"
         if total+len(text)>limit: break
@@ -27,58 +27,54 @@ def format_results(results,limit=2200):
     return "".join(output)
 
 def remove_domains(results,domains):
-    return [x for x in results if not any(domain in clean(x.get("url","")).lower() for domain in domains)]
-
-def official_results(results):
-    blocked=["reddit.com","youtube.com","youtu.be","facebook.com","instagram.com","twitter.com","x.com"]
-    return remove_domains(results,blocked)
+    return [x for x in results if not any(domain in str(x.get("url","")).lower() for domain in domains)]
 
 @mcp.tool
 def search_products(query:str):
-    """Find multiple real products and exact models matching any shopping request, purpose, requirements and budget."""
-    results=search(f"{query} India best options exact model price specifications",8)
-    return format_results(results,3200)
+    """Find multiple real product models relevant to any shopping request."""
+    results=search(f"{query} best products India current models price specifications",8)
+    return format_results(results,3500)
 
 @mcp.tool
-def search_product_details(query:str):
-    """Find exact specifications and configuration details for a product model."""
-    results=search(f"{query} specifications exact model configuration features",6)
-    return format_results(results,2600)
+def search_candidate(query:str):
+    """Research one exact product candidate including model, specifications and price."""
+    results=search(f'"{query}" India price specifications buy',6)
+    return format_results(results,2500)
 
 @mcp.tool
 def search_official_specs(query:str):
-    """Find manufacturer or official product specifications. Prefer official sources but return reliable sources when official data is unavailable."""
-    results=official_results(search(f"{query} official specifications manufacturer product",7))
-    return format_results(results,2400)
+    """Find official manufacturer specifications for an exact product model."""
+    results=search(f'"{query}" official specifications manufacturer',6)
+    return format_results(results,2200)
 
 @mcp.tool
 def search_prices(query:str):
-    """Find current product prices and available listings in India."""
-    results=search(f"{query} current price India buy price ₹",7)
+    """Find current product prices from India retailers and price sources."""
+    results=search(f'"{query}" current price India buy',6)
     return format_results(results,2200)
 
 @mcp.tool
 def search_reviews(query:str):
-    """Find reliable reviews, pros, cons and real-world product performance."""
-    results=search(f"{query} review pros cons performance",6)
-    return format_results(results,2000)
-
-@mcp.tool
-def search_comparison(query:str):
-    """Find comparable alternatives and competing products."""
-    results=search(f"{query} alternatives competitors comparison India",6)
+    """Find professional reviews, advantages, disadvantages and user feedback."""
+    results=search(f'"{query}" review pros cons India',5)
     return format_results(results,1800)
 
 @mcp.tool
+def search_comparison(query:str):
+    """Find comparable alternatives for an exact product."""
+    results=search(f'"{query}" alternatives comparison best similar products',5)
+    return format_results(results,1600)
+
+@mcp.tool
 def search_web(query:str):
-    """Find additional reliable information relevant to the purchase decision."""
-    results=search(f"{query} buying guide features comparison India",5)
+    """Find additional reliable information relevant to a shopping decision."""
+    results=search(query,5)
     return format_results(results,1600)
 
 @mcp.tool
 def search_youtube(query:str):
-    """Find YouTube product reviews and hands-on videos."""
-    results=search(f"site:youtube.com {query} review hands on",4)
-    return format_results(results,1200)
+    """Find video reviews for an exact product."""
+    results=search(f'site:youtube.com "{query}" review',4)
+    return format_results(results,1000)
 
-if __name__=="__main__": mcp.run(transport="streamable-http",host="0.0.0.0",port=int(os.getenv("PORT","8000")))
+if __name__=="__main__": mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
