@@ -20,28 +20,23 @@ def search_web(query,max_results=5):
 
 @mcp.tool
 def search_products(query:str)->str:
-    search_query=f"{query} India actual product models exact model number laptop price specifications buy"
-    return json.dumps(search_web(search_query,8),ensure_ascii=False)
+    return json.dumps(search_web(f"{query} India buy exact product models price specifications",8),ensure_ascii=False)
 
 @mcp.tool
 def search_product_details(product:str)->str:
-    search_query=f'"{product}" exact model specifications RAM processor storage display'
-    return json.dumps(search_web(search_query,4),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" specifications features India',3),ensure_ascii=False)
 
 @mcp.tool
 def search_official_specs(product:str)->str:
-    search_query=f'"{product}" official specifications site:*.com'
-    return json.dumps(search_web(search_query,4),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" official specifications',3),ensure_ascii=False)
 
 @mcp.tool
 def search_prices(product:str)->str:
-    search_query=f'"{product}" price India Amazon Flipkart Croma Reliance'
-    return json.dumps(search_web(search_query,4),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" India price INR',3),ensure_ascii=False)
 
 @mcp.tool
 def search_reviews(product:str)->str:
-    search_query=f'"{product}" review pros cons performance'
-    return json.dumps(search_web(search_query,3),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" review pros cons',3),ensure_ascii=False)
 
 if __name__=="__main__":
     mcp.run(transport="streamable-http",host="0.0.0.0",port=int(os.getenv("PORT",8000)))
