@@ -6,6 +6,7 @@ from tavily import TavilyClient
 load_dotenv()
 
 mcp=FastMCP(name="AI Shopping Intelligence MCP Server")
+
 tavily=TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 def search_web(query,max_results=5):
@@ -13,30 +14,26 @@ def search_web(query,max_results=5):
         data=tavily.search(query=query,search_depth="advanced",max_results=max_results)
         results=[]
         for item in data.get("results",[]):
-            results.append({"title":item.get("title",""),"content":item.get("content","")[:600],"url":item.get("url","")})
+            results.append({"title":item.get("title",""),"content":item.get("content","")[:900],"url":item.get("url","")})
         return results
     except Exception as e:
         return [{"error":str(e)}]
 
 @mcp.tool
 def search_products(query:str)->str:
-    query=f"{query} India exact product models specifications price"
-    return json.dumps(search_web(query,6),ensure_ascii=False)
+    return json.dumps(search_web(f"best exact purchasable product models for {query} India price specifications",8),ensure_ascii=False)
 
 @mcp.tool
 def search_product_details(product:str)->str:
-    query=f'"{product}" specifications features official India'
-    return json.dumps(search_web(query,4),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" exact model specifications features India',5),ensure_ascii=False)
 
 @mcp.tool
 def search_prices(product:str)->str:
-    query=f'"{product}" price India INR'
-    return json.dumps(search_web(query,4),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" exact model current price India INR',5),ensure_ascii=False)
 
 @mcp.tool
 def search_reviews(product:str)->str:
-    query=f'"{product}" review pros cons'
-    return json.dumps(search_web(query,3),ensure_ascii=False)
+    return json.dumps(search_web(f'"{product}" review pros cons performance',4),ensure_ascii=False)
 
 if __name__=="__main__":
-    mcp.run(transport="streamable-http",host="127.0.0.1",port=8000)
+    mcp.run(transport="streamable-http",host="0.0.0.0",port=int(os.getenv("PORT",8000)))
