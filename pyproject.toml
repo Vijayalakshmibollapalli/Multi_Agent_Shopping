@@ -1,6 +1,9 @@
 [project]
-name = "ai-shopping-intelligence"
+name = "shopping-mcp"
 version = "1.0.0"
 description = "AI Shopping Intelligence MCP Server"
 requires-python = ">=3.11,<3.12"
-dependencies = ["fastmcp", "tavily-python"]
+dependencies = [
+    "fastmcp",
+    "tavily-python"
+]
