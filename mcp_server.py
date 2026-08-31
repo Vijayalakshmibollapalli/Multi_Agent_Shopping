@@ -5,95 +5,166 @@ from fastmcp import FastMCP
 
 load_dotenv()
 
+# --------------------------------------------------
+# MCP SERVER
+# --------------------------------------------------
+
 mcp = FastMCP("AI Shopping Intelligence MCP Server")
 
-tavily = TavilyClient(
-    api_key=os.getenv("TAVILY_API_KEY")
-)
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
-def search(query, n=5):
+if not TAVILY_API_KEY:
+    raise RuntimeError("TAVILY_API_KEY is missing in .env")
+
+tavily = TavilyClient(api_key=TAVILY_API_KEY)
+
+
+# --------------------------------------------------
+# SEARCH HELPER
+# --------------------------------------------------
+
+def search_web(query: str, max_results: int = 3):
+    """
+    Perform a compact Tavily search.
+    Only a small amount of information is returned
+    to prevent large LLM contexts.
+    """
+
     try:
-        result = tavily.search(
+        response = tavily.search(
             query=query,
-            max_results=n,
             search_depth="basic",
+            max_results=max_results,
             include_answer=False
         )
-        return result.get("results", [])
-    except Exception as e:
-        return [
-            {
-                "title": "SEARCH_ERROR",
-                "url": "",
-                "content": str(e)
-            }
-        ]
 
-def format_results(results, limit=2500):
+        results = []
+
+        for item in response.get("results", [])[:max_results]:
+
+            results.append({
+                "title": item.get("title", ""),
+                "url": item.get("url", ""),
+                "content": item.get("content", "")[:700]
+            })
+
+        return results
+
+    except Exception as e:
+
+        return [{
+            "title": "SEARCH_ERROR",
+            "url": "",
+            "content": str(e)
+        }]
+
+
+# --------------------------------------------------
+# FORMAT HELPER
+# --------------------------------------------------
+
+def format_results(results, max_chars=2500):
+
     output = []
     total = 0
 
-    for i, item in enumerate(results, 1):
+    for index, item in enumerate(results, 1):
+
         text = (
-            f"[SOURCE {i}]\n"
+            f"[SOURCE {index}]\n"
             f"Title: {item.get('title', '')}\n"
             f"URL: {item.get('url', '')}\n"
-            f"Content: {item.get('content', '')[:500]}"
+            f"Information: {item.get('content', '')[:600]}"
         )
 
-        if total + len(text) > limit:
+        if total + len(text) > max_chars:
             break
 
         output.append(text)
+
         total += len(text)
 
     return "\n\n".join(output)
 
+
+# --------------------------------------------------
+# TOOL 1
+# --------------------------------------------------
+
 @mcp.tool
 def search_products(query: str) -> str:
-    """Find real products matching the user's shopping requirements."""
-    return format_results(
-        search(
-            f"{query} real products India models specifications features",
-            5
-        ),
-        2500
+    """
+    Find real products matching the user's shopping requirement.
+    """
+
+    results = search_web(
+        f"{query} products India specifications models",
+        3
     )
+
+    return format_results(results, 2200)
+
+
+# --------------------------------------------------
+# TOOL 2
+# --------------------------------------------------
 
 @mcp.tool
 def search_prices(query: str) -> str:
-    """Find current prices and availability for products in India."""
-    return format_results(
-        search(
-            f"{query} current price India Amazon Flipkart Croma Reliance Digital official store",
-            5
-        ),
-        2500
+    """
+    Find current prices for products in India.
+    """
+
+    results = search_web(
+        f"{query} current price India Amazon Flipkart Croma Reliance Digital",
+        3
     )
+
+    return format_results(results, 2200)
+
+
+# --------------------------------------------------
+# TOOL 3
+# --------------------------------------------------
 
 @mcp.tool
 def search_reviews(query: str) -> str:
-    """Find product reviews, pros, cons and customer feedback."""
-    return format_results(
-        search(
-            f"{query} reviews pros cons user feedback India problems",
-            5
-        ),
-        2500
+    """
+    Find reviews, pros, cons and customer feedback.
+    """
+
+    results = search_web(
+        f"{query} reviews pros cons customer feedback problems India",
+        3
     )
+
+    return format_results(results, 2200)
+
+
+# --------------------------------------------------
+# TOOL 4
+# --------------------------------------------------
 
 @mcp.tool
 def search_comparison(query: str) -> str:
-    """Find comparisons and alternative products."""
-    return format_results(
-        search(
-            f"{query} comparison alternatives similar products advantages disadvantages",
-            4
-        ),
-        2000
+    """
+    Find product comparisons and alternatives.
+    """
+
+    results = search_web(
+        f"{query} comparison alternatives advantages disadvantages",
+        2
     )
 
+    return format_results(results, 1800)
+
+
+# --------------------------------------------------
+# START MCP SERVER
+# --------------------------------------------------
+
 if __name__ == "__main__":
+
     mcp.run(
         transport="streamable-http",
         host="127.0.0.1",
