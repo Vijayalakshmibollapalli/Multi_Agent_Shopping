@@ -23,18 +23,22 @@ def compact_results(results: list, limit: int = 5000) -> str:
 
 @mcp.tool
 def search_products(query: str) -> str:
+    """Find real products matching the user's requirements."""
     return compact_results(search_web(f"{query} buy India product specifications models", 5))
 
 @mcp.tool
 def search_prices(query: str) -> str:
+    """Find current product prices and availability in India."""
     return compact_results(search_web(f"{query} current price India Amazon Flipkart Croma official store", 5))
 
 @mcp.tool
 def search_reviews(query: str) -> str:
+    """Find product reviews, pros, cons and customer feedback."""
     return compact_results(search_web(f"{query} reviews pros cons customer feedback problems", 5))
 
 @mcp.tool
 def search_comparison(query: str) -> str:
+    """Find product comparisons and alternatives."""
     return compact_results(search_web(f"{query} comparison alternatives best products India", 5))
 
 if __name__ == "__main__":
