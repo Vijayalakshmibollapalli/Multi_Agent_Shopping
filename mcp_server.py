@@ -1,39 +1,49 @@
 import os
-import json
 from dotenv import load_dotenv
-from fastmcp import FastMCP
 from tavily import TavilyClient
+from fastmcp import FastMCP
 
 load_dotenv()
-
-mcp = FastMCP(name="AI Shopping Intelligence MCP Server")
+mcp = FastMCP("AI Shopping Intelligence MCP Server")
 tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
-def search_web(query, max_results=5):
+def search(query,n=5):
     try:
-        response = tavily.search(query=query, search_depth="basic", max_results=max_results, include_answer=False)
-        results = []
-        for item in response.get("results", []):
-            results.append({"title": item.get("title", ""), "content": item.get("content", "")[:600], "url": item.get("url", "")})
-        return results
+        result=tavily.search(query=query,max_results=n,search_depth="basic",include_answer=False)
+        return result.get("results",[])
     except Exception as e:
-        return [{"error": str(e)}]
+        return [{"title":"SEARCH_ERROR","url":"","content":str(e)}]
+
+def format_results(results,limit=6000):
+    output=[]
+    total=0
+    for i,item in enumerate(results,1):
+        text=f"[SOURCE {i}]\nTitle: {item.get('title','')}\nURL: {item.get('url','')}\nContent: {item.get('content','')[:1200]}"
+        if total+len(text)>limit:
+            break
+        output.append(text)
+        total+=len(text)
+    return "\n\n".join(output)
 
 @mcp.tool
-def search_products(query: str) -> str:
-    return json.dumps(search_web(f"India purchasable {query} exact product model current price specifications", 5), ensure_ascii=False)
+def search_products(query:str)->str:
+    """Find real products matching the user's shopping requirements."""
+    return format_results(search(f"{query} real products India models specifications features",5),5000)
 
 @mcp.tool
-def search_product_details(product: str) -> str:
-    return json.dumps(search_web(f'"{product}" India official specifications processor RAM storage display features', 2), ensure_ascii=False)
+def search_prices(query:str)->str:
+    """Find current prices and availability for products in India."""
+    return format_results(search(f"{query} current price India Amazon Flipkart Croma Reliance Digital official store",5),4500)
 
 @mcp.tool
-def search_prices(product: str) -> str:
-    return json.dumps(search_web(f'"{product}" India current price INR Amazon Flipkart official store', 2), ensure_ascii=False)
+def search_reviews(query:str)->str:
+    """Find product reviews, pros, cons and customer feedback."""
+    return format_results(search(f"{query} reviews pros cons user feedback India problems",5),4500)
 
 @mcp.tool
-def search_reviews(product: str) -> str:
-    return json.dumps(search_web(f'"{product}" India customer reviews pros cons performance', 2), ensure_ascii=False)
+def search_comparison(query:str)->str:
+    """Find comparisons and alternative products."""
+    return format_results(search(f"{query} comparison alternatives similar products advantages disadvantages",4),3500)
 
-if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
+if __name__=="__main__":
+    mcp.run(transport="streamable-http",host="127.0.0.1",port=8000)
