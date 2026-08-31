@@ -1,17 +1,10 @@
 [project]
-name = "shopping-intelligence-agent"
+name = "ai-shopping-intelligence"
 version = "1.0.0"
-description = "Agentic AI Shopping Intelligence using LangGraph, MCP, Groq and Tavily"
+description = "AI Shopping Intelligence MCP Server"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "fastapi",
-    "uvicorn",
-    "python-multipart",
-    "python-dotenv",
-    "langchain",
-    "langgraph",
-    "langchain-groq",
-    "langchain-mcp-adapters",
-    "fastmcp",
-    "tavily-python"
+    "fastmcp>=3.4.0",
+    "tavily-python>=0.7.0",
+    "python-dotenv>=1.0.0"
 ]
