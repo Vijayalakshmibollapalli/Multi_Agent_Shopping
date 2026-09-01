@@ -15,10 +15,10 @@ def search_web(query: str, max_results: int = 3) -> list:
     except Exception as e:
         return [{"title": "TAVILY_ERROR", "url": "", "content": str(e)}]
 
-def compact_results(results: list, limit: int = 1800) -> str:
+def compact_results(results: list, limit: int = 1400) -> str:
     output = []
     for i, item in enumerate(results, 1):
-        output.append(f"[SOURCE {i}]\nTitle: {str(item.get('title', ''))[:160]}\nURL: {str(item.get('url', ''))[:250]}\nContent: {str(item.get('content', ''))[:450]}")
+        output.append(f"[SOURCE {i}]\nTitle: {str(item.get('title', ''))[:140]}\nURL: {str(item.get('url', ''))[:220]}\nContent: {str(item.get('content', ''))[:380]}")
     return "\n\n".join(output)[:limit]
 
 @mcp.tool
