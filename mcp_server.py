@@ -22,12 +22,16 @@ def search_web(query: str, max_results: int = 5) -> list:
 def clean_results(results: list) -> str:
     cleaned = []
     for x in results[:5]:
-        cleaned.append({"title": str(x.get("title", "")).strip()[:250], "url": str(x.get("url", "")).strip(), "content": str(x.get("content", "")).strip()[:1400]})
+        cleaned.append({
+            "title": str(x.get("title", "")).strip()[:300],
+            "url": str(x.get("url", "")).strip(),
+            "content": str(x.get("content", "")).strip()[:1200]
+        })
     return json.dumps(cleaned, ensure_ascii=False)
 
 @mcp.tool
 def search_products(query: str) -> str:
-    return clean_results(search_web(f"{query} best products exact models specifications India current", 5))
+    return clean_results(search_web(f"{query} exact product models specifications India", 5))
 
 @mcp.tool
 def search_prices(query: str) -> str:
