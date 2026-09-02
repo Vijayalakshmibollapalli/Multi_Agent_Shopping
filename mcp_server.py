@@ -18,7 +18,10 @@ def search_web(query: str, max_results: int = 3) -> list:
 def compact_results(results: list, limit: int = 900) -> str:
     output = []
     for i, item in enumerate(results, 1):
-        output.append(f"[SOURCE {i}]\nTitle: {str(item.get('title', ''))[:150]}\nURL: {str(item.get('url', ''))[:300]}\nContent: {str(item.get('content', ''))[:350]}")
+        title = str(item.get("title", "")).replace("\n", " ")[:150]
+        url = str(item.get("url", "")).strip()
+        content = str(item.get("content", "")).replace("\n", " ")[:350]
+        output.append(f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}")
     return "\n\n".join(output)[:limit]
 
 @mcp.tool
