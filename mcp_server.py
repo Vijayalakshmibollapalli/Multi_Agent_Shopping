@@ -40,4 +40,5 @@ def search_comparison(query: str) -> str:
     return clean_results(search_web(f"{query} comparison alternatives competing products India 2026", 5), 4000)
 
 if __name__ == "__main__":
+    print("Starting AI Shopping Intelligence MCP Server...")
     mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
