@@ -42,25 +42,29 @@ def clean_results(results: list) -> str:
 
 @mcp.tool
 def search_products(query: str) -> str:
-    search_query = f"{query} specific product models specifications features best options India"
+    """Find real products and models matching the user's shopping request."""
+    search_query = f"{query} best specific product models specifications features India"
     return clean_results(search_web(search_query, 8))
 
 
 @mcp.tool
 def search_prices(query: str) -> str:
-    search_query = f"{query} current price India online price Amazon Flipkart official store Croma current"
+    """Find current prices for products matching the user's shopping request."""
+    search_query = f"{query} current price India Amazon Flipkart Croma official store price"
     return clean_results(search_web(search_query, 8))
 
 
 @mcp.tool
 def search_reviews(query: str) -> str:
+    """Find reviews, ratings, pros, cons and user experience for products."""
     search_query = f"{query} customer reviews ratings pros cons user experience reliability India"
     return clean_results(search_web(search_query, 8))
 
 
 @mcp.tool
 def search_comparison(query: str) -> str:
-    search_query = f"{query} product comparison alternatives competing models features price India"
+    """Find competing products and alternatives."""
+    search_query = f"{query} comparison alternatives competing products models features price India"
     return clean_results(search_web(search_query, 8))
 
 
