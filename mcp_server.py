@@ -6,8 +6,8 @@ from fastmcp import FastMCP
 load_dotenv()
 
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
-if not TAVILY_API_KEY:
-    raise RuntimeError("TAVILY_API_KEY is missing in .env")
+
+if not TAVILY_API_KEY: raise RuntimeError("TAVILY_API_KEY is missing in .env")
 
 mcp = FastMCP("AI Shopping Intelligence MCP Server")
 tavily = TavilyClient(api_key=TAVILY_API_KEY)
@@ -27,8 +27,7 @@ def format_data(results: list, limit: int = 5000) -> str:
         url = str(result.get("url", "")).strip()
         content = str(result.get("content", "")).strip()[:1800]
         item = f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}"
-        if total + len(item) > limit:
-            break
+        if total + len(item) > limit: break
         output.append(item)
         total += len(item)
     return "\n\n".join(output)
