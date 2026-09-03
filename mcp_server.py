@@ -5,58 +5,56 @@ from fastmcp import FastMCP
 
 load_dotenv()
 
-mcp=FastMCP("AI Shopping Intelligence MCP Server")
-TAVILY_API_KEY=os.getenv("TAVILY_API_KEY")
-
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 if not TAVILY_API_KEY:
     raise RuntimeError("TAVILY_API_KEY is missing in .env")
 
-tavily=TavilyClient(api_key=TAVILY_API_KEY)
+mcp = FastMCP("AI Shopping Intelligence MCP Server")
+tavily = TavilyClient(api_key=TAVILY_API_KEY)
 
-def search(query,n=6):
+def search(query: str, n: int = 6) -> list:
     try:
-        r=tavily.search(query=query,max_results=n,search_depth="advanced",include_answer=False)
-        return r.get("results",[])
+        response = tavily.search(query=query, max_results=n, search_depth="advanced", include_answer=False)
+        return response.get("results", [])
     except Exception as e:
-        return [{"title":"SEARCH_ERROR","url":"","content":str(e)}]
+        return [{"title": "SEARCH_ERROR", "url": "", "content": str(e)}]
 
-def format_data(results,limit=5000):
-    out=[]
-    total=0
-    for i,r in enumerate(results,1):
-        if not isinstance(r,dict):
-            continue
-        title=str(r.get("title","")).strip()
-        url=str(r.get("url","")).strip()
-        content=str(r.get("content","")).strip()
-        content=content[:1800]
-        x=f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}"
-        if total+len(x)>limit:
+def format_data(results: list, limit: int = 5000) -> str:
+    output = []
+    total = 0
+    for i, result in enumerate(results, 1):
+        title = str(result.get("title", "")).strip()
+        url = str(result.get("url", "")).strip()
+        content = str(result.get("content", "")).strip()[:1800]
+        item = f"[SOURCE {i}]\nTitle: {title}\nURL: {url}\nContent: {content}"
+        if total + len(item) > limit:
             break
-        out.append(x)
-        total+=len(x)
-    return "\n\n".join(out)
+        output.append(item)
+        total += len(item)
+    return "\n\n".join(output)
 
 @mcp.tool
-def search_products(query:str):
-    """Find real products and relevant specifications for any shopping category."""
-    return format_data(search(f"{query} India real products exact model names specifications features variants",6),5000)
+def search_products(query: str) -> str:
+    """Find real products, exact models and relevant specifications for any shopping category."""
+    return format_data(search(f"{query} real products India exact model names specifications features current models", 6), 5000)
 
 @mcp.tool
-def search_prices(query:str):
+def search_prices(query: str) -> str:
     """Find current product prices and availability in India."""
-    return format_data(search(f"{query} India current price price range availability Amazon Flipkart Croma Reliance Digital official store",6),4500)
+    return format_data(search(f"{query} India current price online price Amazon Flipkart Croma Reliance Digital official store availability", 6), 4500)
 
 @mcp.tool
-def search_reviews(query:str):
-    """Find expert reviews user reviews ratings pros cons problems and reliability."""
-    return format_data(search(f"{query} India expert reviews user reviews ratings pros cons problems reliability performance",6),4500)
+def search_reviews(query: str) -> str:
+    """Find product reviews, ratings, user experience, pros, cons and common problems."""
+    return format_data(search(f"{query} India expert reviews user reviews ratings pros cons problems reliability performance", 6), 4500)
 
 @mcp.tool
-def search_comparison(query:str):
-    """Find competitors alternatives comparisons specifications prices advantages and disadvantages."""
-    return format_data(search(f"{query} India comparison alternatives competitors similar products specifications price advantages disadvantages",6),4000)
+def search_comparison(query: str) -> str:
+    """Find competitors, alternatives, comparisons, specifications and performance differences."""
+    return format_data(search(f"{query} comparison alternatives competitors similar products specifications price advantages disadvantages India", 5), 3500)
 
-if __name__=="__main__":
+if __name__ == "__main__":
     print("Starting AI Shopping Intelligence MCP Server...")
-    mcp.run(transport="streamable-http",host="0.0.0.0",port=8000)
+    print("Tavily API configured successfully.")
+    print("MCP server running on http://0.0.0.0:8000")
+    mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
