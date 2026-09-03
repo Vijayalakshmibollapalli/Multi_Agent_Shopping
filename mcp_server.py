@@ -34,26 +34,26 @@ def clean_results(results: list, max_items: int = 4, max_content: int = 700) -> 
 
 @mcp.tool
 def search_products(query: str) -> str:
-    """Search real products and specifications for any shopping request."""
-    search_query = f"{query} real product models specifications features India"
+    """Find real product models matching the user's shopping request."""
+    search_query = f"{query} exact product model name specifications RAM storage processor display India"
     return clean_results(search_web(search_query, 4), 4, 700)
 
 @mcp.tool
 def search_prices(query: str) -> str:
-    """Search current prices for products matching any shopping request."""
-    search_query = f"{query} current price India online price Amazon Flipkart Croma official store"
+    """Find current prices for the specified products in India."""
+    search_query = f"{query} exact model price India Amazon Flipkart Croma official store"
     return clean_results(search_web(search_query, 4), 4, 700)
 
 @mcp.tool
 def search_reviews(query: str) -> str:
-    """Search reviews, ratings, pros and cons for products matching any shopping request."""
-    search_query = f"{query} customer reviews ratings pros cons user experience reliability"
+    """Find reviews and user experience for the specified products."""
+    search_query = f"{query} exact model reviews ratings pros cons reliability user experience"
     return clean_results(search_web(search_query, 4), 4, 700)
 
 @mcp.tool
 def search_comparison(query: str) -> str:
-    """Search real competing products and alternatives for any shopping request."""
-    search_query = f"{query} product comparison alternatives competing models specifications price India"
+    """Compare the specified products with alternatives."""
+    search_query = f"{query} comparison alternatives specifications price performance India"
     return clean_results(search_web(search_query, 4), 4, 700)
 
 if __name__ == "__main__":
