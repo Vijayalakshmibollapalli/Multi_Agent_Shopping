@@ -27,20 +27,20 @@ def format_data(results:list,limit:int=6500)->str:
     return "\n\n".join(output)
 @mcp.tool
 def search_products(query:str)->str:
-    """Find real purchasable products from any shopping category."""
-    return format_data(search(f"{query} India real purchasable products exact product names brands models variants specifications features",10),7000)
+    """Find real purchasable products from any shopping category with exact product names, brands, models, variants and relevant specifications."""
+    return format_data(search(f"{query} real purchasable products India exact product names brands models variants specifications features current products",8),6000)
 @mcp.tool
 def search_prices(query:str)->str:
-    """Find current prices and availability for any product category in India."""
-    return format_data(search(f"{query} India current price online price availability official store Amazon Flipkart Croma Reliance Digital Myntra Tata Cliq retailer",10),6500)
+    """Find current prices and availability for products from any shopping category in India."""
+    return format_data(search(f"{query} India current price online price availability official store Amazon Flipkart Croma Reliance Digital Myntra retailer",8),5500)
 @mcp.tool
 def search_reviews(query:str)->str:
-    """Find expert and user reviews for products from any shopping category."""
-    return format_data(search(f"{query} India expert reviews user reviews ratings customer feedback pros cons quality reliability common problems performance",10),6500)
+    """Find expert reviews, user reviews, ratings, customer feedback, pros, cons, quality, reliability and common problems for any product category."""
+    return format_data(search(f"{query} India expert reviews user reviews ratings customer feedback pros cons quality reliability common problems performance",8),5500)
 @mcp.tool
 def search_comparison(query:str)->str:
-    """Find alternatives and competing products from any shopping category."""
-    return format_data(search(f"{query} India alternatives competitors similar products comparison differences specifications price advantages disadvantages",10),5500)
+    """Find competing products, alternatives and comparable products from the same shopping category."""
+    return format_data(search(f"{query} comparison alternatives competitors similar products differences specifications price advantages disadvantages India",8),4500)
 if __name__=="__main__":
     print("Starting AI Shopping Intelligence MCP Server...")
     print("Tavily API configured successfully.")
