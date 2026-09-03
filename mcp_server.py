@@ -23,7 +23,7 @@ def search_web(query: str, max_results: int = 4) -> list:
         return [{"title": "TAVILY ERROR", "url": "", "content": str(e)}]
 
 
-def clean_results(results: list, max_items: int = 4, max_content: int = 900) -> str:
+def clean_results(results: list, max_items: int = 4, max_content: int = 700) -> str:
     cleaned = []
 
     for item in results[:max_items]:
@@ -35,11 +35,7 @@ def clean_results(results: list, max_items: int = 4, max_content: int = 900) -> 
         content = str(item.get("content", "")).strip()
 
         if title or content:
-            cleaned.append({
-                "title": title[:300],
-                "url": url[:500],
-                "content": content[:max_content]
-            })
+            cleaned.append({"title": title[:250], "url": url[:500], "content": content[:max_content]})
 
     return json.dumps(cleaned, ensure_ascii=False)
 
@@ -47,45 +43,33 @@ def clean_results(results: list, max_items: int = 4, max_content: int = 900) -> 
 @mcp.tool
 def search_products(query: str) -> str:
     """Search real products and specifications for any shopping request."""
-
     search_query = f"{query} real product models specifications features India"
-
     results = search_web(search_query, 4)
-
-    return clean_results(results, 4, 900)
+    return clean_results(results, 4, 700)
 
 
 @mcp.tool
 def search_prices(query: str) -> str:
     """Search current prices for products matching any shopping request."""
-
     search_query = f"{query} current price India online price Amazon Flipkart Croma official store"
-
     results = search_web(search_query, 4)
-
-    return clean_results(results, 4, 900)
+    return clean_results(results, 4, 700)
 
 
 @mcp.tool
 def search_reviews(query: str) -> str:
     """Search reviews, ratings, pros and cons for products matching any shopping request."""
-
     search_query = f"{query} customer reviews ratings pros cons user experience reliability"
-
     results = search_web(search_query, 4)
-
-    return clean_results(results, 4, 900)
+    return clean_results(results, 4, 700)
 
 
 @mcp.tool
 def search_comparison(query: str) -> str:
     """Search real competing products and alternatives for any shopping request."""
-
     search_query = f"{query} product comparison alternatives competing models specifications price India"
-
     results = search_web(search_query, 4)
-
-    return clean_results(results, 4, 900)
+    return clean_results(results, 4, 700)
 
 
 if __name__ == "__main__":
