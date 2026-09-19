@@ -46,16 +46,26 @@ The system is designed to consider factors such as:
           |                     |
   Requirements Node       Research Node
   (Groq LLM)                   |
+  
                     Remote MCP Server
                          (FastMCP)
+  
                                |
-       +-----------------------+-----------------------+
+                               
+       -------------------------------------------------
+       
        |                       |                       |
+ 
  Product Search          Price Search           Review Search
+ 
        |                       |                       |
-       +-----------------------+-----------------------+
+       
+       -------------------------------------------------
+                               
                                |
+                               
                        Tavily Web Search
+                               
                                |
                     Research Results
                                |
