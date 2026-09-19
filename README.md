@@ -38,37 +38,39 @@ The system is designed to consider factors such as:
 
                     USER
                      |
+                     v
              FastAPI Web Interface
                      |
+                     v
              LangGraph Workflow
                      |
-          -----------------------
+          +----------+----------+
           |                     |
+          v                     v
   Requirements Node       Research Node
-     (Groq LLM)                 |
-                        Remote MCP Server
-                           (FastMCP)
-
-                                |
-                               
-       -------------------------------------------------
-
-       |                       |                       |
-       
-     Product Search          Price Search           Review Search
-       
-       |                       |                       | 
-       
-       -------------------------------------------------
-       
+  (Groq LLM)                   |
+                               v
+                    Remote MCP Server
+                         (FastMCP)
                                |
+       +-----------------------+-----------------------+
+       |                       |                       |
+       v                       v                       v
+ Product Search          Price Search           Review Search
+       |                       |                       |
+       +-----------------------+-----------------------+
+                               |
+                               v
                        Tavily Web Search
                                |
+                               v
                     Research Results
                                |
+                               v
                     Recommendation Node
                          (Groq LLM)
                                |
+                               v
                      Final Research Report
 
 ## Workflow
