@@ -51,8 +51,11 @@ The system is designed to consider factors such as:
                          (FastMCP)
                                |
        -------------------------------------------------       
+       
        |                       |                       |
+       
  Product Search          Price Search           Review Search
+       
        |                       |                       |
        -------------------------------------------------
                                |
