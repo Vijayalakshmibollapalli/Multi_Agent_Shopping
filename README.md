@@ -42,12 +42,17 @@ The system is designed to consider factors such as:
                      |
              LangGraph Workflow
                      |
+                     
           -----------------------
+  
           |                     |
+  
   Requirements Node       Research Node
   (Groq LLM)                   |
+  
                         Remote MCP Server
                            (FastMCP)
+
                                |
                                
        -------------------------------------------------
@@ -261,23 +266,7 @@ Searches for product alternatives and comparison information.
 
 The project uses a sequential LangGraph workflow with three main nodes:
 
-START
-
-  |
-
-Requirements Extraction
-
-  |
-
-Product Research
-
-  |
-
-Recommendation Generation
-
-  |
-
-END
+START -> Requirements Extraction -> Product Research -> Recommendation Generation -> END
 
 ### Requirements Node
 
