@@ -49,19 +49,12 @@ The system is designed to consider factors such as:
   
                     Remote MCP Server
                          (FastMCP)
-  
                                |
-                               
-       -------------------------------------------------
-       
+       -------------------------------------------------       
        |                       |                       |
- 
  Product Search          Price Search           Review Search
- 
        |                       |                       |
-       
        -------------------------------------------------
-                               
                                |
                                
                        Tavily Web Search
