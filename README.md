@@ -49,11 +49,17 @@ The system is designed to consider factors such as:
                         Remote MCP Server
                            (FastMCP)
                                |
+                               
        -------------------------------------------------
+
        |                       |                       |
+       
      Product Search          Price Search           Review Search
+       
        |                       |                       | 
+       
        -------------------------------------------------
+       
                                |
                        Tavily Web Search
                                |
@@ -256,13 +262,21 @@ Searches for product alternatives and comparison information.
 The project uses a sequential LangGraph workflow with three main nodes:
 
 START
+
   |
+
 Requirements Extraction
+
   |
+
 Product Research
+
   |
+
 Recommendation Generation
+
   |
+
 END
 
 ### Requirements Node
