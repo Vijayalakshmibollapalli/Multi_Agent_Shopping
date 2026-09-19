@@ -42,18 +42,14 @@ The system is designed to consider factors such as:
                      |
              LangGraph Workflow
                      |
-                     
           -----------------------
-  
           |                     |
-  
   Requirements Node       Research Node
-  (Groq LLM)                   |
-  
+     (Groq LLM)                 |
                         Remote MCP Server
                            (FastMCP)
 
-                               |
+                                |
                                
        -------------------------------------------------
 
@@ -160,79 +156,6 @@ The application returns a plain-text report containing:
 | HTML/CSS/JavaScript | Frontend interface                             |
 | python-dotenv       | Environment variable management                |
 | asyncio             | Concurrent research tool calls                 |
-
-## Project Structure
-
-Agentic-AI-Shopping-Intelligence
-│
-├── app.py
-├── mcp_server.py
-├── shopping_agent.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-└── README.md
-
-### File Description
-
-| File                | Description                                                 |
-| ------------------- | ----------------------------------------------------------- |
-|   app.py            | FastAPI application and HTML frontend                       |
-|   mcp_server.py     | FastMCP server with shopping research tools                 |
-|   shopping_agent.py | LangGraph workflow and LLM integration                      |
-|   requirements.txt  | Python dependencies                                         |
-|   .env.example      | Example environment variable configuration                  |
-|   .gitignore       | Prevents secrets and unnecessary files from being committed |
-|   README.md         | Project documentation                                       |
-
-## Installation and Setup
-
-### 1. Clone the Repository
-
-git clone https://github.com/YOUR_USERNAME/Agentic-AI-Shopping-Intelligence.git
-
-Move into the project directory:
-
-cd Agentic-AI-Shopping-Intelligence
-
-### 2. Create a Virtual Environment
-
-Python 3.11 is recommended for this project.
-
-python -m venv .venv
-
-Activate the virtual environment on Windows PowerShell:
-
-.venv\Scripts\Activate.ps1
-
-### 3. Install Dependencies
-
-python -m pip install -r requirements.txt
-
-### 4. Configure Environment Variables
-
-Create a .env file in the project root.
-
-Add the required configuration:
-
-MCP_SERVER_URL=https://shopping.fastmcp.app/mcp
-FASTMCP_TOKEN=your_fastmcp_token
-GROQ_API_KEY=your_groq_api_key
-GROQ_MODEL=openai/gpt-oss-20b
-
-The MCP server separately requires a Tavily API key in its deployment environment:
-
-TAVILY_API_KEY=your_tavily_api_key
-
-Security: Never upload actual API keys or tokens to GitHub.
-
-### 5. Run the FastAPI Application
-
-python -m uvicorn app:app --reload
-
-Open the application in your browser:
-
-http://127.0.0.1:8000
 
 ## Example Queries
 
